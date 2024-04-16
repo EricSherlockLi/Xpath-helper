@@ -2,6 +2,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/reset.css';
-import Popup from './Popup'; // Import the Popup component
+import IconPopup from './iconPopup'; // Import the iconPopup component
 
-ReactDOM.render(<Popup />, document.getElementById('root'));
+ReactDOM.render(<IconPopup />, document.getElementById('root'));
