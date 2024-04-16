@@ -3,12 +3,15 @@ import React, { useState } from 'react';
 import { Button, Typography } from 'antd';
 const { Title, Paragraph } = Typography;
 
-const Popup = () => {
-    const [isEnabled, setIsEnabled] = useState(true);
+const IconPopup = () => {
+    // Start with the extension being disabled, i.e., needing to be started
+    const [isExtensionEnabled, setIsExtensionEnabled] = useState(false);
 
+    // Toggle the state of the extension between enabled and disabled
     const toggleExtension = () => {
-        setIsEnabled(!isEnabled);
-        // Here you can also communicate with background.js if needed
+        chrome.runtime.sendMessage({ command: "toggle" }, function (response) {
+            setIsExtensionEnabled(response.enabled);
+        });
     };
 
     return (
@@ -18,20 +21,20 @@ const Popup = () => {
             alignItems: 'center',
             padding: '16px',
             minWidth: '180px',
-            //backgroundColor: '#FFD54F',
+            //backgroundColor: '#FFD54F', // Uncomment or adjust this line if you want to change the background color
         }}>
             <Title level={4} style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>XPath Finder</Title>
             <Paragraph>Quickly find and copy XPath of any element.</Paragraph>
             <Button
-                type={isEnabled ? 'primary' : 'default'}
+                type={isExtensionEnabled ? 'danger' : 'primary'}
                 ghost
                 onClick={toggleExtension}
                 style={{ minWidth: '150px' }}
             >
-                {isEnabled ? 'Disable' : 'Enable'} Extension
+                {isExtensionEnabled ? 'Stop' : 'Start'} Extension
             </Button>
         </div>
     );
 };
 
-export default Popup;
+export default IconPopup;

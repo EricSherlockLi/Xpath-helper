@@ -4,7 +4,10 @@
   "version": "1.0",
   "description": "Easily find and copy the XPath of any HTML element.",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage",
+    "tabs",
+    "contextMenus"
   ],
   "action": {
     "default_popup": "index.html",

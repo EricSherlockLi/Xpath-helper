@@ -1,25 +1,32 @@
-// // This script generates an XPath for the right-clicked element and sends it to the popup.
+// contentScript.js
+let xpathScannerEnabled = false; // Local state in the content script
 
-// function generateXPath(element) {
-//     if (element.id) return `id("${element.id}")`;
-//     if (element === document.body) return element.tagName;
+// Listener for state update messages from the background script
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+    if (message.type === "UPDATE_STATE") {
+        xpathScannerEnabled = message.state;
+    }
+});
 
-//     let ix = 0;
-//     const siblings = element.parentNode.childNodes;
-//     for (let i = 0; i < siblings.length; i++) {
-//         const sibling = siblings[i];
-//         if (sibling === element) return `${generateXPath(element.parentNode)}/${element.tagName}[${ix + 1}]`;
-//         if (sibling.nodeType === 1 && sibling.tagName === element.tagName) ix++;
-//     }
-// }
+document.addEventListener('contextmenu', function (event) {
+    if (xpathScannerEnabled) {
+        event.preventDefault();  // Prevent the default context menu
+        const clickedElement = event.target;
+        const xpath = generateXPath(clickedElement);
+        alert(`XPath: ${xpath}`); // Use browser alert to display XPath
+    }
+});
 
-// document.addEventListener('contextmenu', function (event) {
-//     chrome.storage.local.get(['isActive'], (result) => {
-//         if (result.isActive) {
-//             const xpath = generateXPath(event.target);
-//             console.log(`Generated XPath: ${xpath}`);
-//             // Send XPath to popup or background as needed
-//             // Note: You'll need to set up message passing between content script and popup/background.
-//         }
-//     });
-// }, true);
+function generateXPath(element) {
+    let path = '';
+    while (element && element.nodeType === Node.ELEMENT_NODE) {
+        if (element.id) {
+            return `id("${element.id}")` + path;
+        }
+        const index = Array.from(element.parentNode.children).indexOf(element) + 1;
+        const part = `${element.tagName.toLowerCase()}[${index}]`;
+        path = '/' + part + path;
+        element = element.parentNode;
+    }
+    return path;
+}
